@@ -79,6 +79,33 @@ module.exports.loadFSEventFiles = (scenario) => {
     })
 }
 
+module.exports.loadAtomCaptures = scenario => {
+  const eventFiles = glob.sync(path.join(path.dirname(scenario.path), 'atom', '*.json*'))
+  return eventFiles
+    .map(f => {
+      const name = path.basename(f)
+      const disabled = scenario.disabled
+      const batches = fse.readJsonSync(f)
+        .map(batch =>
+          batch.map(event =>
+            // TODO: Windows paths conversion
+            event.stats
+              ? _.defaultsDeep({
+                stats: {
+                  atime: new Date(event.stats.atime),
+                  mtime: new Date(event.stats.mtime),
+                  ctime: new Date(event.stats.ctime),
+                  birthtime: new Date(event.stats.birthtime)
+                }
+              }, event)
+              : event
+          )
+        )
+
+      return {name, batches, disabled}
+    })
+}
+
 module.exports.loadRemoteChangesFiles = (scenario) => {
   const pattern = path.join(path.dirname(scenario.path), 'remote', '*.json*')
 
