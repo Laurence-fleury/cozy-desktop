@@ -235,9 +235,6 @@ function environmentWatcherType (env /*: * */ = process.env) /*: ?WatcherType */
 }
 
 function platformDefaultWatcherType (platform /*: string */ = process.platform) /*: WatcherType */ {
-  if (platform === 'darwin') {
-    return 'chokidar'
-  }
   return 'atom'
 }
 
